@@ -1,5 +1,8 @@
 ## Directory Syncer
 
+![Main](https://github.com/raybritton/dir-syncer/workflows/Main/badge.svg?branch=master)
+[![dependency status](https://deps.rs/repo/github/raybritton/dir-syncer/status.svg)](https://deps.rs/repo/github/raybritton/dir-syncer)
+
 Synchronises file contents from one directory to another
 
 :warning: You should probably use `rsync` or `git` instead of this.
