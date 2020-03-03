@@ -5,7 +5,7 @@ Synchronises file contents from one directory to another
 You should probably use `rsync` or `git` instead of this.
 
 ### Usage
-```bash
+```
 Synchronises file contents from one directory to another. Actions sync'd are adding, modifying and deleting of files. 
 Note that any files that match the include pattern(s) will be deleted from the destination directory if they are not
 also in the source directory.
