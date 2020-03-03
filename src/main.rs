@@ -2,15 +2,20 @@ use clap::{App, Arg, Values};
 use crate::file_checker::FileChecker;
 use regex::Regex;
 use crate::syncer::Syncer;
-use simplelog::{SimpleLogger, Config, ConfigBuilder};
-use log::{info, LevelFilter};
+use simplelog::{SimpleLogger, ConfigBuilder};
+use log::{info, error, LevelFilter};
+use std::time::{Duration, Instant};
+use std::ops::Add;
+use chrono::prelude::*;
 
 pub type Error = Box<dyn std::error::Error>;
+
+const FORMAT_NEXT_CHECK: &'static str = "%H:%M:%S";
 
 mod file_checker;
 mod syncer;
 
-fn main() -> Result<(), Error>{
+fn main() -> Result<(), Error> {
     let matches = App::new("Directory Syncer")
         .version("1.0")
         .author("Ray Britton <raybritton@gmail.com>")
@@ -92,7 +97,7 @@ fn main() -> Result<(), Error>{
 
     let src_dir = matches.value_of("src_dir").expect("No source dir").to_string();
     let dest_dir = matches.value_of("dest_dir").expect("No dest dir").to_string();
-    let freq: usize = matches.value_of("freq").expect("No frequency").parse().unwrap();
+    let freq: u64 = matches.value_of("freq").expect("No frequency").parse().unwrap();
     let operations = matches.value_of("operations").expect("No operation count").parse().unwrap();
     let includes = matches.values_of("include").expect("No include pattern(s)").map(|text| Regex::new(text).unwrap()).collect();
     let excludes = matches.values_of("exclude").unwrap_or(Values::default()).map(|text| Regex::new(text).unwrap()).collect();
@@ -113,28 +118,47 @@ fn main() -> Result<(), Error>{
         src_dir.clone(),
         dest_dir.clone(),
         includes,
-        excludes
+        excludes,
     );
 
-    match file_checker.get_list_of_files() {
-        Ok(results) => {
-            if results.has_any_operations() {
-                if check {
-                    println!("{}", results);
-                } else {
-                    let mut syncer = Syncer::new(src_dir, dest_dir, operations, results);
-                    syncer.run();
-                }
-            } else {
-                info!("Directories already sync'd");
+    if check {
+        match file_checker.get_list_of_files() {
+            Ok(results) => {
+                println!("{}", results);
+            }
+            Err(err) => {
+                error!("{:?}", err);
             }
         }
-        Err(err) => {
-            eprintln!("{:?}", err);
-        }
+    } else {
+        let syncer = Syncer::new(src_dir, dest_dir, operations);
+        loop_and_sync(file_checker, syncer, Duration::from_secs(freq * 60));
     }
 
     Ok(())
+}
+
+fn loop_and_sync(file_checker: FileChecker, mut syncer: Syncer, sleep_time: Duration) {
+    let chrono_sleep_time = chrono::Duration::from_std(sleep_time).expect("Frequency is too high");
+    info!("Monitoring");
+    loop {
+        match file_checker.get_list_of_files() {
+            Ok(results) => {
+                if results.has_any_operations() {
+                    syncer.set_results(results);
+                    syncer.run();
+                } else {
+                    info!("Directories already sync'd");
+                }
+            }
+            Err(err) => {
+                error!("{:?}", err);
+            }
+        }
+        let next = chrono::Local::now().add(chrono_sleep_time);
+        info!("Next check at {}", next.format(FORMAT_NEXT_CHECK));
+        std::thread::sleep(sleep_time);
+    }
 }
 
 fn int_to_log_level(count: u64) -> log::LevelFilter {
@@ -143,5 +167,5 @@ fn int_to_log_level(count: u64) -> log::LevelFilter {
         2 => log::LevelFilter::Debug,
         3 => log::LevelFilter::Trace,
         _ => log::LevelFilter::Error
-    }
+    };
 }

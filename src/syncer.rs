@@ -6,30 +6,37 @@ pub struct Syncer {
     src_dir: String,
     dest_dir: String,
     op_count: usize,
-    files: FileCheckResults
+    files: Option<FileCheckResults>
 }
 
 impl Syncer {
-    pub fn new(src_dir: String, dest_dir: String, op_count: usize, files: FileCheckResults) -> Syncer {
+    pub fn new(src_dir: String, dest_dir: String, op_count: usize) -> Syncer {
         return Syncer {
             src_dir,
             dest_dir,
             op_count,
-            files
+            files: None
         };
     }
 }
 
 impl Syncer {
+    pub fn set_results(&mut self, results: FileCheckResults) {
+        self.files = Some(results);
+    }
+
     pub fn run(&mut self) {
+        let mut files_option = None;
+        std::mem::swap(&mut self.files, &mut files_option);
+        let mut files = files_option.expect("No FileCheckResults in run");
         for _ in 0..self.op_count {
-            if let Some((mode, file)) = self.files.next() {
+            if let Some((mode, file)) = files.next() {
                 debug!("Processing {} for {}", mode, file.filename);
                 match mode {
-                    Mode::ADD => self.add(file),
-                    Mode::REMOVE => self.remove(file),
-                    Mode::UPDATE => self.update(file),
-                }
+                    Mode::ADD => &self.add(file),
+                    Mode::REMOVE => &self.remove(file),
+                    Mode::UPDATE => &self.update(file),
+                };
             } else {
                 debug!("No more files to work on");
             }
