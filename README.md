@@ -2,7 +2,7 @@
 
 Synchronises file contents from one directory to another
 
-You should probably use `rsync` or `git` instead of this.
+:warning: You should probably use `rsync` or `git` instead of this.
 
 ### Usage
 ```
