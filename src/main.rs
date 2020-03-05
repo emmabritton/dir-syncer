@@ -95,11 +95,11 @@ fn main() -> Result<(), Error> {
             .multiple(true))
         .get_matches();
 
-    let src_dir = matches.value_of("src_dir").expect("No source dir").to_string();
-    let dest_dir = matches.value_of("dest_dir").expect("No dest dir").to_string();
-    let freq: u64 = matches.value_of("freq").expect("No frequency").parse().unwrap();
-    let operations = matches.value_of("operations").expect("No operation count").parse().unwrap();
-    let includes = matches.values_of("include").expect("No include pattern(s)").map(|text| Regex::new(text).unwrap()).collect();
+    let src_dir = matches.value_of("src_dir").expect("[CLAP ERROR] No source dir").to_string();
+    let dest_dir = matches.value_of("dest_dir").expect("[CLAP ERROR] No dest dir").to_string();
+    let freq: u64 = matches.value_of("freq").expect("[CLAP ERROR] No frequency").parse().unwrap();
+    let operations = matches.value_of("operations").expect("[CLAP ERROR] No operation count").parse().unwrap();
+    let includes = matches.values_of("include").expect("[CLAP ERROR] No include pattern(s)").map(|text| Regex::new(text).unwrap()).collect();
     let excludes = matches.values_of("exclude").unwrap_or(Values::default()).map(|text| Regex::new(text).unwrap()).collect();
     let check = matches.is_present("check");
     let verbosity = matches.occurrences_of("verbose");
