@@ -1,6 +1,6 @@
 [package]
 name = "dirsync"
-version = "0.1.0b"
+version = "0.1.1"
 authors = ["Ray Britton <ray.britton@mubaloo.com>"]
 edition = "2018"
 
