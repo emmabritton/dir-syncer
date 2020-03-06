@@ -111,7 +111,9 @@ fn main() -> Result<(), Error> {
         .set_location_level(LevelFilter::Trace)
         .build();
 
-    SimpleLogger::init(log_level, config)?;
+    if let Err(err) = SimpleLogger::init(log_level, config) {
+        eprintln!("Logger failed to initialise\nNo other errors will be printed\n{}", err);
+    }
 
     let file_checker = FileChecker::new(
         src_dir.clone(),
