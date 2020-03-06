@@ -1,8 +1,11 @@
 [package]
 name = "dirsync"
-version = "0.1.2"
-authors = ["Ray Britton <ray.britton@mubaloo.com>"]
+version = "0.2.0"
+authors = ["Ray Britton <raybritton@gmail.com>"]
 edition = "2018"
+publish = false
+repository = "https://github.com/raybritton/dir-syncer"
+description = "Synchronises file contents from one directory to another. Actions sync'd are adding, modifying and deleting of files. \nNote that any files that match the include pattern(s) will be deleted from the destination directory if they are not also in the source directory.\nNote this is not recursive and all files beginning a period/full stop are ignored.\n\nGenerally best to run with -v so a record of files changed is generated."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

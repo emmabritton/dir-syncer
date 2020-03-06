@@ -1,4 +1,4 @@
-use clap::{App, Arg, Values};
+use clap::{App, Arg, Values, crate_name, crate_version, crate_authors, crate_description};
 use crate::file_checker::FileChecker;
 use regex::Regex;
 use crate::syncer::Syncer;
@@ -16,10 +16,10 @@ mod file_checker;
 mod syncer;
 
 fn main() -> Result<(), Error> {
-    let matches = App::new("Directory Syncer")
+    let matches = App::new(crate_name!())
         .version(crate_version!())
-        .author("Ray Britton <raybritton@gmail.com>")
-        .about("Synchronises file contents from one directory to another. Actions sync'd are adding, modifying and deleting of files. \nNote that any files that match the include pattern(s) will be deleted from the destination directory if they are not also in the source directory.\nNote this is not recursive and all files beginning a period/full stop are ignored.\n\nGenerally best to run with -v so a record of files changed is generated.")
+        .author(crate_authors!())
+        .about(crate_description!())
         .arg(Arg::with_name("src_dir")
             .value_name("DIR")
             .takes_value(true)
