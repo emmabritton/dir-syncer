@@ -17,7 +17,7 @@ mod syncer;
 
 fn main() -> Result<(), Error> {
     let matches = App::new("Directory Syncer")
-        .version("1.0")
+        .version(crate_version!())
         .author("Ray Britton <raybritton@gmail.com>")
         .about("Synchronises file contents from one directory to another. Actions sync'd are adding, modifying and deleting of files. \nNote that any files that match the include pattern(s) will be deleted from the destination directory if they are not also in the source directory.\nNote this is not recursive and all files beginning a period/full stop are ignored.\n\nGenerally best to run with -v so a record of files changed is generated.")
         .arg(Arg::with_name("src_dir")
