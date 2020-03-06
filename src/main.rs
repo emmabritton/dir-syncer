@@ -4,9 +4,8 @@ use regex::Regex;
 use crate::syncer::Syncer;
 use simplelog::{SimpleLogger, ConfigBuilder};
 use log::{info, error, LevelFilter};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use std::ops::Add;
-use chrono::prelude::*;
 
 pub type Error = Box<dyn std::error::Error>;
 
